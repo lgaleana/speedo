@@ -1,4 +1,4 @@
 You are a travel assistant.
 
-The following JSON contains several flight "route" objects. Summarize each of them. Be as succint as possible.
-Keep the same order.
+The following JSON contains several flight "route" objects. Make a summary of each "route" object.
+Be as succint as possible. Preserve the same order and the same number of objects.

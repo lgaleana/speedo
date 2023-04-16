@@ -13,9 +13,9 @@ messages = []
 
 def main():
     # Initial prompting
-    today = datetime.now().strftime("%B %d, %Y")
-    initial_prompt = f"{chat_prompt}\nToday is {today}\nSay hi."
-    messages.append({"role": "system", "content": initial_prompt})
+    today = datetime.now().strftime("%A %B %d, %Y")
+    messages.append({"role": "system", "content": chat_prompt})
+    messages.append({"role": "system", "content": f"Today is {today}\nSay hi."})
     assistant_message = chat_call(messages)
     messages.append({"role": "assistant", "content": assistant_message})
 
@@ -34,7 +34,7 @@ def main():
             print(f"\033[0;0m{parsed_assistant_messages}")
 
             # Massage context
-            messages_for_flights_agent = messages[:-1]
+            messages_for_flights_agent = messages[1:-1]
             messages_for_flights_agent.append(
                 {"role": "assistant", "content": parsed_assistant_messages[0]}
             )
