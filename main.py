@@ -1,22 +1,25 @@
-import json
 from datetime import datetime
-from typing import List
+from typing import Dict, List
 
-from agents.flights import get_flights, process_flights_json
+from agents.flights import get_flights_request_json
 from agents.flights_summary import summarize_response_json
-from chat.api import chat_call
+from agents.chat_api import chat_call
 from prompts import chat_prompt
+from services.flights import process_flights_json, search_for_flights
 
 
 messages = []
 
 
 def main():
+    # Initial prompting
     today = datetime.now().strftime("%B %d, %Y")
     initial_prompt = f"{chat_prompt}\nToday is {today}\nSay hi."
     messages.append({"role": "system", "content": initial_prompt})
     assistant_message = chat_call(messages)
     messages.append({"role": "assistant", "content": assistant_message})
+
+    # Chat loop
     while True:
         print(f"\033[92m{assistant_message}")
         user_message = input("\033[1;34m")
@@ -24,27 +27,35 @@ def main():
         assistant_message = chat_call(messages)
         messages.append({"role": "assistant", "content": assistant_message})
 
-        parsed_assistant_messages = parse_message(assistant_message)
+        # Parse whether an action needs to be taken
+        parsed_assistant_messages = parse_assistant_message(assistant_message)
         if len(parsed_assistant_messages) > 1:
             # print(f"\033[92m{parsed_assistant_messages[0]}")
             print(f"\033[0;0m{parsed_assistant_messages}")
 
+            # Massage context
             messages_for_flights_agent = messages[:-1]
             messages_for_flights_agent.append(
                 {"role": "assistant", "content": parsed_assistant_messages[0]}
             )
-            flights_json = get_flights(messages_for_flights_agent)
-            flights_summary = summarize_response_json(process_flights_json(flights_json))
-            print(f"\033[0;0m{flights_summary}")
-            flights = ""
-            for json, flight in zip(flights_json, flights_summary):
-                flights += f"{flight}\n{json['deep_link']}\n"
-            print(f"\033[92m{flights}")
+
+            search_flights(messages_for_flights_agent)
             break
 
 
-def parse_message(message: str) -> List[str]:
+def parse_assistant_message(message: str) -> List[str]:
     return message.split("[Search the Internet]")
+
+
+def search_flights(messages_for_flights_agent: List[Dict[str, str]]) -> None:
+    flights_request_json = get_flights_request_json(messages_for_flights_agent)
+    flights = search_for_flights(flights_request_json)
+    flights_summary = summarize_response_json(process_flights_json(flights))
+    print(f"\033[0;0m{flights_summary}")
+    flight_results = ""
+    for json, flight in zip(flights, flights_summary):
+        flight_results += f"{flight}\n{json['deep_link']}\n"
+    print(f"\033[92m{flight_results}")
 
 
 if __name__ == "__main__":

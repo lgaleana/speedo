@@ -1,10 +1,7 @@
 import os
-import json
 from typing import Any, Dict, List
 
 import openai
-
-from prompts import chat_prompt
 
 
 MODEL = "gpt-3.5-turbo"
@@ -17,8 +14,8 @@ def openai_call(messages: List[Dict[str, str]], model: str = MODEL) -> Dict[str,
         messages=messages,
         temperature=0.6,
     )
-    return response
+    return response  # type: ignore
 
 
-def chat_call(messages: List[Dict[str, str]], model: str = MODEL) -> Dict[str, Any]:
+def chat_call(messages: List[Dict[str, str]], model: str = MODEL) -> str:
     return openai_call(messages, model)["choices"][0]["message"]["content"]
