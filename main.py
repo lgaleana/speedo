@@ -2,11 +2,7 @@ import json
 from datetime import datetime
 from typing import List
 
-from agents.flights import (
-    generate_request_json,
-    search_for_flights,
-    parse_flights_response,
-)
+from agents.flights import get_flights
 from agents.flights_summary import summarize_response_json
 from chat.api import chat_call
 from prompts import chat_prompt
@@ -36,11 +32,8 @@ def main():
             messages_for_flights_agent.append(
                 {"role": "assistant", "content": parsed_assistant_messages[0]}
             )
-            flights_request_json = generate_request_json(messages_for_flights_agent)
-
-            flights_response_json = search_for_flights(flights_request_json)
-            parsed_flights_response = parse_flights_response(flights_response_json)
-            print(f"\033[0;0m{summarize_response_json(parsed_flights_response)}")
+            flights_json = get_flights(messages_for_flights_agent)
+            print(f"\033[0;0m{summarize_response_json(flights_json)}")
             break
     # Do something
 
