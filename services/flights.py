@@ -4,8 +4,7 @@ from typing import Any, Dict, List
 import requests
 
 
-def search_for_flights(payload: Dict[str, str]):
-    print(f"\033[0;0m{payload}")
+def search_kiwi(payload: Dict[str, Any]):
     BASE_URL = "https://api.tequila.kiwi.com/v2/search?"
 
     response = requests.get(
@@ -17,10 +16,11 @@ def search_for_flights(payload: Dict[str, str]):
         },
     )
     print(f"\033[0;0m{response.json()}")
-    return response.json()["data"]
+    return response.json()
 
 
 def process_flights_json(json_response: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    response = [{"route": flight["route"]} for flight in json_response]
-    print(f"\033[0;0m{response}")
-    return response
+    processed_response = [{"route": flight["route"]} for flight in json_response]
+    for route in processed_response:
+        print(f"\033[0;0m{route}")
+    return processed_response

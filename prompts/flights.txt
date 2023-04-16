@@ -15,6 +15,7 @@ For the dates of the return flights, use the 'return_to' and 'return_from'.
 - return_to: Max return date of the whole trip (dd/mm/yyyy). If return_from is specified, return_to must be
 specified.
 - sort: Sorts the results by quality, price, date or duration. Price is the default value.
+- max_stopovers: Max number of stopovers per itinerary.  Use 'max_stopovers=0' for direct flights only.
 
 Based on the conversation above, build a JSON request for the API.
 
