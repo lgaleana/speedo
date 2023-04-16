@@ -1,5 +1,6 @@
 import re
 import json
+import os
 from typing import Dict, List, Optional
 
 import requests
@@ -34,7 +35,7 @@ def search_for_flights(payload: Dict[str, str]):
         params=payload,
         headers={
             "accept": "application/json",
-            "apikey": "1QTVqV0VjqZPZbyiiXl3WenpNSCCmnnE",
+            "apikey": os.environ["KIWI"],
         },
     )
     print(f"\033[0;0m{response.json()}")
