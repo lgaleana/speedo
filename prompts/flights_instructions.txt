@@ -1,13 +1,22 @@
 You have access to a ticket flights API.
 
 API documentation:
-- from: Origin.
-- destination: Destination:
-- from_date: Date of departuer.
-- return_date: Date of return.
+- fly_from (required): It can accept differen values. These values might be airport codes, two letter country codes,
+metropolitan codes and radiuses as well as a subdivision, region, autonomous_territory,
+continent and specials (Points of interest, such as Times Square).
+- fly_to: It accepts the same values in the same format as the 'fly_from' parameter.
+If you don’t include any value you’ll get aggregated results for some airports.
+- date_from (required): search flights from this date (dd/mm/yyyy). Use parameters date_from and date_to as a date
+range for the flight departure. Parameters 'date_from=01/04/2021' and 'date_to=01/04/2021' mean that the
+departure can be anytime between the specified dates.
+For the dates of the return flights, use the 'return_to' and 'return_from'.
+- date_to (required): Search flights upto this date (dd/mm/yyyy)
+- return_from: Min return date of the whole trip (dd/mm/yyyy).
+- return_to: Max return date of the whole trip (dd/mm/yyyy). If return_from is specified, return_to must be
+specified.
 
 Based on the conversation above, build a JSON request for the API.
 
 ```
-JSON
+{...}
 ```
