@@ -21,5 +21,4 @@ def openai_call(messages: List[Dict[str, str]], model: str = MODEL) -> Dict[str,
 
 
 def chat_call(messages: List[Dict[str, str]], model: str = MODEL) -> Dict[str, Any]:
-    print(f"\033[0;0m{messages}")
     return openai_call(messages, model)["choices"][0]["message"]["content"]
