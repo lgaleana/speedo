@@ -44,7 +44,7 @@ def main():
 
 
 def parse_assistant_message(message: str) -> List[str]:
-    return message.split("[Search the Internet]")
+    return message.split("[SEARCHING THE INTERNET]")
 
 
 def search_flights(messages_for_flights_agent: List[Dict[str, str]]) -> None:
