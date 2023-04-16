@@ -1,8 +1,8 @@
-with open("prompts/chat_instructions.txt") as p:
+with open("prompts/chat.txt") as p:
     chat_prompt = p.read()
     p.close()
 
 
-with open("prompts/flights_instructions.txt") as p:
+with open("prompts/flights.txt") as p:
     flights_prompt = p.read()
     p.close()
