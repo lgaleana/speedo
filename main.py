@@ -1,7 +1,9 @@
 from datetime import datetime
 from typing import List
 
-from chat.api import chat_call, base_prompt
+from agents.flights import generate_request_json
+from chat.api import chat_call
+from prompts import chat_prompt
 
 
 messages = []
@@ -9,7 +11,7 @@ messages = []
 
 def main():
     today = datetime.now().strftime("%B %d, %Y")
-    initial_prompt = f"{base_prompt}\nToday is {today}\nSay hi."
+    initial_prompt = f"{chat_prompt}\nToday is {today}\nSay hi."
     messages.append({"role": "system", "content": initial_prompt})
     assistant_message = chat_call(messages)
     while True:
@@ -21,8 +23,12 @@ def main():
 
         parsed_assistant_messages = parse_message(assistant_message)
         if len(parsed_assistant_messages) > 1:
-            parsed_messages = "[Search the Internet]".join(parsed_assistant_messages)
-            print(f"\033[0;0m{parsed_messages}")
+            print(f"\033[92m{parsed_assistant_messages[0]}")
+            
+            messages_for_flights_agent = messages[:-1]
+            messages_for_flights_agent.append({"role": "assistant", "content": parsed_assistant_messages[0]})
+            flights_json = generate_request_json(messages_for_flights_agent)
+            print(f"\033[0;0m{flights_json}")
             break
     # Do something
 

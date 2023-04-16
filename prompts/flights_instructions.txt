@@ -1,0 +1,13 @@
+You have access to a ticket flights API.
+
+API documentation:
+- from: Origin.
+- destination: Destination:
+- from_date: Date of departuer.
+- return_date: Date of return.
+
+Based on the conversation above, build a JSON request for the API.
+
+```
+JSON
+```

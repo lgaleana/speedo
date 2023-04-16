@@ -4,7 +4,7 @@ from typing import Any, Dict, List
 
 import openai
 
-from chat import base_prompt
+from prompts import chat_prompt
 
 
 MODEL = "gpt-3.5-turbo"
@@ -15,7 +15,7 @@ def openai_call(messages: List[Dict[str, str]], model: str = MODEL) -> Dict[str,
     response = openai.ChatCompletion.create(
         model=model,
         messages=messages,
-        temperature=0.7,
+        temperature=0.6,
     )
     return response
 
