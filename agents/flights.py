@@ -24,8 +24,7 @@ def _get_flights(messages: List[Dict[str, str]], retry: int):
         messages.append({"role": "assistant", "content": assistant_message})
         json_request = _parse_model_response_for_json(assistant_message)
         json_request["limit"] = 5
-        flights_response = _search_for_flights(json_request)
-        return _parse_flights_response(flights_response)
+        return  _search_for_flights(json_request)["data"]
     except Exception as e:
         print(f"\033[0;0mException: {e}")
         if retry < MAX_RETRY:
@@ -65,7 +64,7 @@ def _search_for_flights(payload: Dict[str, str]):
     return response.json()
 
 
-def _parse_flights_response(json_response: Dict[str, Any]) -> Dict[str, Any]:
-    response = [{"route": flight["route"]} for flight in json_response["data"]]
+def process_flights_json(json_response: Dict[str, Any]) -> Dict[str, Any]:
+    response = [{"route": flight["route"]} for flight in json_response]
     print(f"\033[0;0m{response}")
     return response

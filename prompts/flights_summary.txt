@@ -1,4 +1,4 @@
 You are a travel assisntant.
 
 The following JSON contains several flight routes. Summarize each of them. Be as succint as possible.
-Keep the same order. Separate by \n.
+Keep the same order.

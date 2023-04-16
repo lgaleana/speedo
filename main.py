@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 from typing import List
 
-from agents.flights import get_flights
+from agents.flights import get_flights, process_flights_json
 from agents.flights_summary import summarize_response_json
 from chat.api import chat_call
 from prompts import chat_prompt
@@ -33,9 +33,13 @@ def main():
                 {"role": "assistant", "content": parsed_assistant_messages[0]}
             )
             flights_json = get_flights(messages_for_flights_agent)
-            print(f"\033[0;0m{summarize_response_json(flights_json)}")
+            flights_summary = summarize_response_json(process_flights_json(flights_json))
+            print(f"\033[0;0m{flights_summary}")
+            flights = ""
+            for json, flight in zip(flights_json, flights_summary):
+                flights += f"{flight}\n{json['deep_link']}\n"
+            print(f"\033[92m{flights}")
             break
-    # Do something
 
 
 def parse_message(message: str) -> List[str]:
