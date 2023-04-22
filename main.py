@@ -1,11 +1,14 @@
 from datetime import datetime
-from typing import Dict, List
+from typing import Any, Dict, List
 
-from agents.flights import search_for_flights
+from agents.flights import get_flights_request
 from agents.flights_summary import summarize_flights
 from agents.chat_api import chat_call
 from prompts import chat_prompt
-from services.flights import get_routes
+from services.flights import get_routes, search_kiwi
+
+
+MAX_SEARCH_RETRY = 3
 
 
 messages = []
@@ -28,7 +31,7 @@ def main():
         messages.append({"role": "assistant", "content": assistant_message})
 
         # Parse whether an action needs to be taken
-        parsed_assistant_messages = parse_assistant_message(assistant_message)
+        parsed_assistant_messages = _parse_assistant_message(assistant_message)
         if len(parsed_assistant_messages) > 1:
             # print(f"\033[92m{parsed_assistant_messages[0]}")
             print(f"\033[0;0m{parsed_assistant_messages}")
@@ -39,16 +42,17 @@ def main():
                 {"role": "assistant", "content": parsed_assistant_messages[0]}
             )
 
-            search_flights(messages_for_flights_agent)
+            _search_flights(messages_for_flights_agent)
             break
 
 
-def parse_assistant_message(message: str) -> List[str]:
+def _parse_assistant_message(message: str) -> List[str]:
     return message.split("[SEARCHING THE INTERNET]")
 
 
-def search_flights(messages_for_flights_agent: List[Dict[str, str]]) -> None:
-    flights = search_for_flights(messages_for_flights_agent)
+def _search_flights(messages_for_flights_agent: List[Dict[str, str]]) -> None:
+    flights = _try_search_flights(messages_for_flights_agent, 1)
+
     flights_summary = summarize_flights(get_routes(flights))
     print(f"\033[0;0m{flights_summary}")
 
@@ -57,6 +61,28 @@ def search_flights(messages_for_flights_agent: List[Dict[str, str]]) -> None:
     for json, flight in zip(flights, flights_summary):
         flight_results += f"{flight}\n{json['deep_link']}\n"
     print(f"\033[92m{flight_results}")
+
+
+def _try_search_flights(
+    messages_for_flights_agent: List[Dict[str, str]], retry: int
+) -> List[Dict[str, Any]]:
+    assert retry
+
+    try:
+        flights_request = get_flights_request(messages_for_flights_agent)
+        return search_kiwi(flights_request)["data"]
+    except Exception as e:
+        print(f"\033[0;0mException: {e}")
+        if retry < MAX_SEARCH_RETRY:
+            print("\033[0;0mRetrying...")
+            messages.append(
+                {
+                    "role": "system",
+                    "content": f"Previous JSON request produced the following error {e}. Please fix",
+                }
+            )
+            return _try_search_flights(messages, retry + 1)
+        raise e
 
 
 if __name__ == "__main__":
