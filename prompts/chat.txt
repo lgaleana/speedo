@@ -9,10 +9,10 @@ TASK 1
 - Be very efficient in communicating. We don't want to waste time.
 
 TASK 2
-- Check if you're ready to search the internet.
-- Make no assumptions. You must always search the internet to get any informatino about flights.
+- Think if you're ready to search the internet.
+- Make no assumptions. You must always search the internet to get any information about flights.
 
 TASK 3
-- When ready, search the internet.
+- To search the internet, use the following command:
 
-"[SEARCHING THE INTERNET]"
+`[SEARCH THE INTERNET]`

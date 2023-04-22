@@ -16,7 +16,8 @@ Based on the conversation above, build a JSON request for the API.
 Break this apart into steps:
 1. First, summarize the conversation.
 2. Then, make the math for the dates.
-3. Lastly, build the JSON request.
+3. Reflect if you need to use max_stopovers. Include it only if necessary.
+4. Build the JSON request.
 
 ```
 {...}

@@ -47,12 +47,11 @@ def main():
 
 
 def _parse_assistant_message(message: str) -> List[str]:
-    return message.split("[SEARCHING THE INTERNET]")
+    return message.split("[SEARCH THE INTERNET]")
 
 
 def _search_flights(messages_for_flights_agent: List[Dict[str, str]]) -> None:
     flights = _try_search_flights(messages_for_flights_agent, 1)
-
     flights_summary = summarize_flights(get_routes(flights))
     print(f"\033[0;0m{flights_summary}")
 
