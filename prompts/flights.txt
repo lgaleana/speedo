@@ -15,7 +15,7 @@ Based on the conversation above, build a JSON request for the API.
 
 Break this apart into steps:
 1. First, summarize the conversation.
-2. Then, make the math for the dates,
+2. Then, make the math for the dates.
 3. Lastly, build the JSON request.
 
 ```

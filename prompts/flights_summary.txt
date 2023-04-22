@@ -1,4 +1,14 @@
 You are a travel assistant.
 
-The following JSON contains several flight "route" objects. Make a summary of each "route" object.
-Be as succint as possible. Preserve the same order and the same number of objects.
+The following list contains several flight "route" objects. Please perform the following 2 tasks.
+
+TASK 1:
+- Does this list contain any flight routes? Yes or no.
+
+TASK 2:
+- Make a summary of each "route" object.
+- Be as succint as possible.
+- Preserve the same order and the same number of objects.
+
+TASK 1 response: YES/NO
+TASK 2 response:

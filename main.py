@@ -5,7 +5,7 @@ from agents.flights import search_for_flights
 from agents.flights_summary import summarize_flights
 from agents.chat_api import chat_call
 from prompts import chat_prompt
-from services.flights import process_flights_json
+from services.flights import get_routes
 
 
 messages = []
@@ -49,7 +49,7 @@ def parse_assistant_message(message: str) -> List[str]:
 
 def search_flights(messages_for_flights_agent: List[Dict[str, str]]) -> None:
     flights = search_for_flights(messages_for_flights_agent)
-    flights_summary = summarize_flights(process_flights_json(flights))
+    flights_summary = summarize_flights(get_routes(flights))
     print(f"\033[0;0m{flights_summary}")
 
     # Display results

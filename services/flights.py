@@ -19,7 +19,7 @@ def search_kiwi(payload: Dict[str, Any]):
     return response.json()
 
 
-def process_flights_json(json_response: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def get_routes(json_response: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     processed_response = [{"route": flight["route"]} for flight in json_response]
     for route in processed_response:
         print(f"\033[0;0m{route}")
