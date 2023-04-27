@@ -2,7 +2,7 @@ import re
 import json
 from typing import Any, Dict, List
 
-from agents.chat_api import chat_call
+from lib import llm
 from prompts import flights_prompt
 from utils.io import print_system
 
@@ -18,7 +18,7 @@ def _try_get_flights_request(messages: List[Dict[str, str]], retry: int) -> Dict
     assert retry
     
     messages.append({"role": "user", "content": flights_prompt})
-    assistant_message = chat_call(messages)
+    assistant_message = llm.next(messages)
     messages.append({"role": "assistant", "content": assistant_message})
     print_system(assistant_message)
     

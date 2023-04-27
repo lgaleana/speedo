@@ -3,7 +3,7 @@ from typing import Any, Dict, List
 
 from agents.flights import get_flights_request
 from agents.flights_summary import summarize_flights
-from agents.chat_api import chat_call
+from lib import llm
 from prompts import chat_prompt
 from services.flights import get_routes, search_kiwi
 from utils.io import user_input, print_assistant, print_system
@@ -20,7 +20,7 @@ def main():
     today = datetime.now().strftime("%A %B %d, %Y")
     messages.append({"role": "system", "content": chat_prompt})
     messages.append({"role": "system", "content": f"Today is {today}\nSay hi."})
-    assistant_message = chat_call(messages)
+    assistant_message = llm.next(messages)
     messages.append({"role": "assistant", "content": assistant_message})
 
     # Chat loop
@@ -28,7 +28,7 @@ def main():
         print_assistant(assistant_message)
         user_message = user_input()
         messages.append({"role": "user", "content": user_message})
-        assistant_message = chat_call(messages)
+        assistant_message = llm.next(messages)
 
         # Parse whether an action needs to be taken
         parsed_assistant_message = _parse_assistant_message(assistant_message)
