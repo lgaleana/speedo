@@ -37,7 +37,7 @@ def main():
                 {"role": "assistant", "content": parsed_assistant_message[0]}
             )
 
-            _search_flights(messages[:-1])
+            _search_flights(messages)
             break
 
         messages.append({"role": "assistant", "content": assistant_message})
@@ -69,8 +69,8 @@ def _try_search_flights(
 ) -> List[Dict[str, Any]]:
     assert retry
 
+    flights_request = get_flights_request(messages)
     try:
-        flights_request = get_flights_request(messages)
         return search_kiwi(flights_request)["data"]
     except Exception as e:
         print(f"\033[0;0mException: {e}")

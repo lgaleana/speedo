@@ -1,11 +1,8 @@
 You have access to the following API:
 
 API documentation:
-- fly_from (required): It can accept differen values. These values might be airport codes, two letter country codes,
-metropolitan codes and radiuses as well as a subdivision, region, autonomous_territory,
-continent and specials (Points of interest, such as Times Square).
-- fly_to: It accepts the same values in the same format as the 'fly_from' parameter.
-If you don’t include any value you’ll get aggregated results for some airports.
+- fly_from (required): Airport code.
+- fly_to: Airport code.
 - date_from (required): Departure date (dd/mm/yyyy).
 - return_from: Return date (dd/mm/yyyy).
 - sort: Sorts the results by quality, price, date or duration. Price is the default value.
@@ -16,7 +13,7 @@ Based on the conversation above, build a JSON request for the API.
 Break this apart into steps:
 1. First, summarize the conversation.
 2. Then, make the math for the dates.
-3. Reflect if you need to use max_stopovers. Include it only if necessary.
+3. Reflect if you need to include max_stopovers. Include it only if necessary.
 4. Build the JSON request only with necessary fields.
 
 ```
