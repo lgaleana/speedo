@@ -3,6 +3,8 @@ from typing import Any, Dict, List
 
 import requests
 
+from utils.io import print_system
+
 
 def search_kiwi(payload: Dict[str, Any]):
     BASE_URL = "https://api.tequila.kiwi.com/v2/search?"
@@ -15,7 +17,7 @@ def search_kiwi(payload: Dict[str, Any]):
             "apikey": os.environ["KIWI"],
         },
     )
-    print(f"\033[0;0m{response.json()}")
+    print_system(response.json())
     return response.json()
 
 

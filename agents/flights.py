@@ -4,13 +4,13 @@ from typing import Any, Dict, List
 
 from agents.chat_api import chat_call
 from prompts import flights_prompt
+from utils.io import print_system
 
 
 MAX_RETRY = 3
 
 
 def get_flights_request(messages: List[Dict[str, str]]) -> Dict[str, Any]:
-    print(messages)
     return _try_get_flights_request(messages, 1)
 
 
@@ -20,16 +20,16 @@ def _try_get_flights_request(messages: List[Dict[str, str]], retry: int) -> Dict
     messages.append({"role": "user", "content": flights_prompt})
     assistant_message = chat_call(messages)
     messages.append({"role": "assistant", "content": assistant_message})
-    print(f"\033[0;0m{assistant_message}")
+    print_system(assistant_message)
     
     try :
         json_request = _parse_assistant_response_for_json(assistant_message)
-        print(f"\033[0;0m{json_request}")
+        print_system(json_request)
         return json_request
     except Exception as e:
-        print(f"\033[0;0mException: {e}")
+        print_system(f"Exception: {e}")
         if retry < MAX_RETRY:
-            print("\033[0;0mRetrying...")
+            print_system("0mRetrying...")
             messages.append(
                 {
                     "role": "system",
