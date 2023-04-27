@@ -70,8 +70,10 @@ def _try_search_flights(
     assert retry
 
     flights_request = get_flights_request(messages)
+    flights_json = "error"
     try:
-        return search_kiwi(flights_request)["data"]
+        flights_json = search_kiwi(flights_request)
+        return flights_json["data"]
     except Exception as e:
         print(f"\033[0;0mException: {e}")
         if retry < MAX_SEARCH_RETRY:
@@ -79,7 +81,7 @@ def _try_search_flights(
             messages.append(
                 {
                     "role": "system",
-                    "content": f"Previous JSON request produced the following error {e}. Please fix",
+                    "content": f"Previous JSON request produced the following error :: {flights_json}. Please fix",
                 }
             )
             return _try_search_flights(messages, retry + 1)
