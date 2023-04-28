@@ -7,7 +7,7 @@ from tasks.flights import parse_assistant_response_for_json
 
 
 def fix_request_json(wrong_json_request: str, error: str) -> Dict[str, Any]:
-    wrong_json_request = wrong_json_request.replace("'", "\n")
+    wrong_json_request = wrong_json_request.replace("'", '"')
     messages = [
         {"role": "user", "content": flights_api_prompt},
         {
