@@ -13,6 +13,7 @@ def call(
     messages: List[Dict[str, str]],
     model: Optional[str] = None,
     temperature: Optional[float] = None,
+    stop: Optional[str] = None,
 ) -> Dict[str, Any]:
     if not model:
         model = MODEL
@@ -23,6 +24,7 @@ def call(
         model=model,
         messages=messages,
         temperature=temperature,
+        stop=stop,
     )
 
 
@@ -30,5 +32,6 @@ def next(
     messages: List[Dict[str, str]],
     model: Optional[str] = None,
     temperature: Optional[float] = None,
+    stop: Optional[str] = None,
 ) -> str:
-    return call(messages, model, temperature)["choices"][0]["message"]["content"]
+    return call(messages, model, temperature, stop)["choices"][0]["message"]["content"]

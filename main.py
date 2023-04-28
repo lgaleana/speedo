@@ -1,7 +1,5 @@
-from datetime import datetime
 from typing import Any, Dict, List
 
-from ai import llm
 from tasks import chat
 from tasks.fix_json import fix_request_json
 from tasks.flights import get_flights_request
@@ -30,7 +28,7 @@ def main():
             print_system("\n[Searching...]\n")
 
             flights_request = get_flights_request(messages)
-            flights = _try_search_flights(messages[-1:], flights_request, 1)
+            flights = _try_search_flights(flights_request, 1)
 
             if len(flights) > 0:
                 print_system("\n[Found flights. Summarizing...]")
@@ -44,7 +42,7 @@ def main():
 
 
 def _try_search_flights(
-    messages: List[Dict[str, str]], flights_request: Dict[str, Any], retry: int
+    flights_request: Dict[str, Any], retry: int
 ) -> List[Dict[str, Any]]:
     assert retry
 
@@ -54,10 +52,10 @@ def _try_search_flights(
         return flights_json["data"]
     except Exception as e:
         print_system(f"Exception: {e}")
-        if retry < MAX_SEARCH_RETRY:
+        if retry <= MAX_SEARCH_RETRY:
             print_system("0mRetrying...")
-            flights_request = fix_request_json(messages, str(flights_json))
-            return _try_search_flights(messages, flights_request, retry + 1)
+            flights_request = fix_request_json(str(flights_request), str(flights_json))
+            return _try_search_flights(flights_request, retry + 1)
         raise e
 
 

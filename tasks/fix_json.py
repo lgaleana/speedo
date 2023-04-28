@@ -2,19 +2,23 @@ from typing import Any, Dict, List
 
 from ai import llm
 from utils.io import print_system
+from prompts import flights_api_prompt
 from tasks.flights import parse_assistant_response_for_json
 
 
-PROMPT = """
-The JSON request provided produced the following error. Please fix it:
-"""
-MAX_RETRY = 3
-
-
-def fix_request_json(messages: List[Dict[str, str]], error: str) -> Dict[str, Any]:
-    messages.append({"role": "system", "content": PROMPT})
-    messages.append({"role": "system", "content": error})
-    print_system(messages)
+def fix_request_json(wrong_json_request: str, error: str) -> Dict[str, Any]:
+    wrong_json_request = wrong_json_request.replace("'", "\n")
+    messages = [
+        {"role": "user", "content": flights_api_prompt},
+        {
+            "role": "user",
+            "content": f"The following JSON request produced the following error: {error}.",
+        },
+        {"role": "user", "content": f"```\n{wrong_json_request}\n```"},
+        {"role": "user", "content": "Check if the airport codes are correct."},
+        {"role": "user", "content": "Then, write the correct JSON."},
+        {"role": "user", "content": "```\nJSON\n```"},
+    ]
 
     assistant_message = llm.next(messages)
     messages.append({"role": "assistant", "content": assistant_message})

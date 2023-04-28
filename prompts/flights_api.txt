@@ -1,0 +1,7 @@
+API documentation:
+- fly_from (required): Airport code.
+- fly_to: Airport code.
+- date_from (required): Departure date (dd/mm/yyyy).
+- return_from: Return date (dd/mm/yyyy).
+- sort: Sorts the results by quality, price, date or duration. Price is the default value.
+- max_stopovers: Max number of stopovers per itinerary.  Use 'max_stopovers=0' for direct flights only.
