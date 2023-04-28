@@ -16,7 +16,6 @@ def get_flights_request(messages: List[Dict[str, str]]) -> Dict[str, Any]:
     messages.append({"role": "system", "content": flights_prompt})
     messages.append({"role": "system", "content": f"Today is {today}."})
 
-    print_system(messages)
     assistant_message = llm.next(messages)
     messages.append({"role": "assistant", "content": assistant_message})
     print_system(assistant_message)

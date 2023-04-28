@@ -10,7 +10,6 @@ def next_action(conversation: List[Dict[str, str]]) -> Dict[str, str]:
     messages = [{"role": "system", "content": chat_prompt}]
     messages.append({"role": "system", "content": f"Today is {today}\nSay hi."})
 
-    print(messages + conversation)
     return _parse_assistant_message(llm.next(messages + conversation))
 
 
