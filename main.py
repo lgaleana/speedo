@@ -1,12 +1,11 @@
-from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from typing import Any, Dict, List
 
 from ai import llm
+from tasks import chat
 from tasks.fix_json import fix_request_json
 from tasks.flights import get_flights_request
-from tasks.flights_summary import summarize_flight
-from prompts import chat_prompt
+from tasks.flights_summary import summarize_flights
 from services.flights import get_routes, search_kiwi
 from utils.io import user_input, print_assistant, print_system
 
@@ -15,46 +14,33 @@ MAX_SEARCH_RETRY = 3
 
 
 def main():
-    # Initial prompting
-    today = datetime.now().strftime("%A %B %d, %Y")
-    messages = [{"role": "system", "content": chat_prompt}]
-    messages.append({"role": "system", "content": f"Today is {today}\nSay hi."})
-    assistant_message = llm.next(messages)
+    messages = []
 
-    # Chat loop
     while True:
+        assistant_action = chat.next_action(messages)
+
+        assistant_message = assistant_action["message"]
         messages.append({"role": "assistant", "content": assistant_message})
         print_assistant(assistant_message)
-        user_message = user_input()
-        messages.append({"role": "user", "content": user_message})
-        assistant_message = llm.next(messages)
 
-        # Parse whether an action needs to be taken
-        parsed_assistant_message = _parse_assistant_message(assistant_message)
-        if len(parsed_assistant_message) > 1:
-            print_assistant(f"{parsed_assistant_message[0].strip()}\n")
-            messages.append(
-                {"role": "assistant", "content": parsed_assistant_message[0].strip()}
-            )
-            print_system("[Searching...]\n")
+        if assistant_action["action"] != "SEARCH_THE_INTERNET":
+            user_message = user_input()
+            messages.append({"role": "user", "content": user_message})
+        else:
+            print_system("\n[Searching...]\n")
 
-            messages = messages[1:]
             flights_request = get_flights_request(messages)
             flights = _search_flights(messages[-2:], flights_request)
 
             if len(flights) > 0:
-                print_system("\n[Flights found. Summarizing...]\n")
+                print_system("\n[Found flights. Summarizing...]\n")
 
-                flights_summary = _summarize_flights(get_routes(flights))
+                flights_summary = summarize_flights(get_routes(flights))
                 for json, flight in zip(flights, flights_summary):
                     print_assistant(f"\n{flight}\nURL: {json['deep_link']}")
             else:
                 print_assistant("Sorry. I was unable to find any flights.")
-            break
-
-
-def _parse_assistant_message(message: str) -> List[str]:
-    return message.split("[SEARCH THE INTERNET]")
+            break 
 
 
 def _search_flights(
@@ -79,11 +65,6 @@ def _try_search_flights(
             flights_request = fix_request_json(messages, str(flights_json))
             return _try_search_flights(messages, flights_request, retry + 1)
         raise e
-
-
-def _summarize_flights(flights_json: List[Dict[str, Any]]) -> List[str]:
-    with ThreadPoolExecutor() as executor:
-        return list(executor.map(summarize_flight, flights_json))
 
 
 if __name__ == "__main__":
