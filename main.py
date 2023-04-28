@@ -1,10 +1,10 @@
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from typing import Any, Dict, List
 
 from ai import llm
 from tasks.flights import get_flights_request
-from tasks.flights_summary import summarize_flights
-from prompts import chat_prompt, flights_prompt
+from prompts import chat_prompt, flights_prompt, flights_summary_prompt
 from services.flights import get_routes, search_kiwi
 from utils.io import user_input, print_assistant, print_system
 
@@ -41,7 +41,7 @@ def main():
 
             flights = _search_flights(messages[1:])
             if len(flights) > 0:
-                flights_summary = summarize_flights(get_routes(flights))
+                flights_summary = _summarize_flights(get_routes(flights))
 
                 print_assistant("I found the following routes:")
                 for json, flight in zip(flights, flights_summary):
@@ -82,6 +82,17 @@ def _try_search_flights(
             )
             return _try_search_flights(messages, retry + 1)
         raise e
+
+
+def _summarize_flights(flights_json: List[Dict[str, Any]]) -> List[str]:
+    prompts = []
+
+    for flight_json in flights_json:
+        prompt = f"{flights_summary_prompt}\n\n{flight_json}"
+        prompts.append([{"role": "user", "content": prompt}])
+
+    with ThreadPoolExecutor() as executor:
+        return list(executor.map(llm.next, prompts))
 
 
 if __name__ == "__main__":
