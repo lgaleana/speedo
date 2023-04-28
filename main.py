@@ -30,7 +30,7 @@ def main():
             print_system("\n[Searching...]\n")
 
             flights_request = get_flights_request(messages)
-            flights = _search_flights(messages[-2:], flights_request)
+            flights = _try_search_flights(messages[-2:], flights_request, 1)
 
             if len(flights) > 0:
                 print_system("\n[Found flights. Summarizing...]\n")
@@ -40,13 +40,7 @@ def main():
                     print_assistant(f"\n{flight}\nURL: {json['deep_link']}")
             else:
                 print_assistant("Sorry. I was unable to find any flights.")
-            break 
-
-
-def _search_flights(
-    messages: List[Dict[str, str]], flights_request: Dict[str, Any]
-) -> List[Dict[str, Any]]:
-    return _try_search_flights(messages, flights_request, 1)
+            break
 
 
 def _try_search_flights(

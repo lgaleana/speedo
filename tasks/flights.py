@@ -28,6 +28,7 @@ def get_flights_request(messages: List[Dict[str, str]]) -> Dict[str, Any]:
 
 def parse_assistant_response_for_json(message: str) -> Dict[str, Any]:
     # Might throw
+    message.replace("```json", "```")
     match = re.search("```(.*)```", message, re.DOTALL)
     json_request = match.group(0).replace("```", "")  # type: ignore
     json_request = json.loads(json_request)
