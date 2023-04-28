@@ -1,7 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Dict, List
 
-from lib import llm
+from ai import llm
 from prompts import flights_summary_prompt
 
 
@@ -12,5 +12,5 @@ def summarize_flights(flights_json: List[Dict[str, Any]]) -> List[str]:
 
 def summarize_flight(flight_json: Dict[str, Any]) -> str:
     prompt = f"{flights_summary_prompt}\n\n{flight_json}"
-    messages = [{"role": "system", "content": prompt}]
+    messages = [{"role": "user", "content": prompt}]
     return llm.next(messages)

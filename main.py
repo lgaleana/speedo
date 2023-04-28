@@ -1,10 +1,10 @@
 from datetime import datetime
 from typing import Any, Dict, List
 
-from agents.flights import get_flights_request
-from agents.flights_summary import summarize_flights
-from lib import llm
-from prompts import chat_prompt
+from ai import llm
+from tasks.flights import get_flights_request
+from tasks.flights_summary import summarize_flights
+from prompts import chat_prompt, flights_prompt
 from services.flights import get_routes, search_kiwi
 from utils.io import user_input, print_assistant, print_system
 
@@ -21,10 +21,10 @@ def main():
     messages.append({"role": "system", "content": chat_prompt})
     messages.append({"role": "system", "content": f"Today is {today}\nSay hi."})
     assistant_message = llm.next(messages)
-    messages.append({"role": "assistant", "content": assistant_message})
 
     # Chat loop
     while True:
+        messages.append({"role": "assistant", "content": assistant_message})
         print_assistant(assistant_message)
         user_message = user_input()
         messages.append({"role": "user", "content": user_message})
@@ -39,31 +39,25 @@ def main():
             )
             print_system("[Searching...]\n\n")
 
-            _search_flights(messages)
-            break
+            flights = _search_flights(messages[1:])
+            if len(flights) > 0:
+                flights_summary = summarize_flights(get_routes(flights))
 
-        messages.append({"role": "assistant", "content": assistant_message})
+                print_assistant("I found the following routes:")
+                for json, flight in zip(flights, flights_summary):
+                    print_assistant(f"\n{flight}\nURL: {json['deep_link']}")
+            else:
+                print_assistant("Sorry. I was unable to find any flights.")
+            break
 
 
 def _parse_assistant_message(message: str) -> List[str]:
     return message.split("[SEARCH THE INTERNET]")
 
 
-def _search_flights(messages: List[Dict[str, str]]) -> None:
-    flights = _try_search_flights(messages, 1)
-
-    if len(flights) > 0:
-        flights_summary = summarize_flights(get_routes(flights))
-        print_system(flights_summary)
-
-        # Display results
-        flight_results = ""
-        for json, flight in zip(flights, flights_summary):
-            flight_results += f"{flight}\nURL: {json['deep_link']}\n\n"
-        print_assistant("I found the following routes:\n")
-        print_assistant(flight_results)
-    else:
-        print_assistant("Sorry. I was unable to find any flights.")
+def _search_flights(messages: List[Dict[str, str]]) -> List[Dict[str, Any]]:
+    messages.append({"role": "system", "content": flights_prompt})
+    return _try_search_flights(messages, 1)
 
 
 def _try_search_flights(
@@ -83,7 +77,7 @@ def _try_search_flights(
             messages.append(
                 {
                     "role": "system",
-                    "content": f"Previous JSON request produced the following error :: {flights_json}. Please fix",
+                    "content": f"Previous JSON request produced the following error :: {flights_json}. Please fix.",
                 }
             )
             return _try_search_flights(messages, retry + 1)

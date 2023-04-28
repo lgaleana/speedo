@@ -1,8 +1,9 @@
 import re
 import json
+from datetime import datetime
 from typing import Any, Dict, List
 
-from lib import llm
+from ai import llm
 from prompts import flights_prompt
 from utils.io import print_system
 
@@ -11,18 +12,20 @@ MAX_RETRY = 3
 
 
 def get_flights_request(messages: List[Dict[str, str]]) -> Dict[str, Any]:
+    print(messages)
     return _try_get_flights_request(messages, 1)
 
 
-def _try_get_flights_request(messages: List[Dict[str, str]], retry: int) -> Dict[str, Any]:
+def _try_get_flights_request(
+    messages: List[Dict[str, str]], retry: int
+) -> Dict[str, Any]:
     assert retry
-    
-    messages.append({"role": "user", "content": flights_prompt})
+
     assistant_message = llm.next(messages)
     messages.append({"role": "assistant", "content": assistant_message})
     print_system(assistant_message)
-    
-    try :
+
+    try:
         json_request = _parse_assistant_response_for_json(assistant_message)
         print_system(json_request)
         return json_request
@@ -33,7 +36,7 @@ def _try_get_flights_request(messages: List[Dict[str, str]], retry: int) -> Dict
             messages.append(
                 {
                     "role": "system",
-                    "content": f"Previous JSON request produced the following error {e}. Please fix",
+                    "content": f"Previous JSON request produced the following error {e}. Please fix.",
                 }
             )
             return _try_get_flights_request(messages, retry + 1)
