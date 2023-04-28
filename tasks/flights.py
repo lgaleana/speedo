@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Any, Dict, List
 
 from ai import llm
-from prompts import flights_api_prompt, flights_prompt
+from tasks.prompts import flights_api_prompt, flights_prompt
 from utils.io import print_system
 
 

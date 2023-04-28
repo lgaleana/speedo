@@ -2,7 +2,7 @@ from typing import Any, Dict, List
 
 from ai import llm
 from utils.io import print_system
-from prompts import flights_api_prompt
+from tasks.prompts import flights_api_prompt
 from tasks.flights import parse_assistant_response_for_json
 
 

@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Dict, List
 
 from ai import llm
-from prompts import chat_prompt
+from tasks.prompts import chat_prompt
 
 
 def next_action(conversation: List[Dict[str, str]]) -> Dict[str, str]:

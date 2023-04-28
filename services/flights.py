@@ -8,7 +8,6 @@ from utils.io import print_system
 
 def search_kiwi(payload: Dict[str, Any]):
     BASE_URL = "https://api.tequila.kiwi.com/v2/search?"
-
     response = requests.get(
         BASE_URL,
         params=payload,
@@ -17,7 +16,6 @@ def search_kiwi(payload: Dict[str, Any]):
             "apikey": os.environ["KIWI"],
         },
     )
-    print_system(response.json())
     return response.json()
 
 
