@@ -18,5 +18,5 @@ Break this apart into steps:
 5. Build the JSON request only with necessary fields.
 
 ```
-{...}
+JSON
 ```

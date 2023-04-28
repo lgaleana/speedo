@@ -30,10 +30,10 @@ def main():
             print_system("\n[Searching...]\n")
 
             flights_request = get_flights_request(messages)
-            flights = _try_search_flights(messages[-2:], flights_request, 1)
+            flights = _try_search_flights(messages[-1:], flights_request, 1)
 
             if len(flights) > 0:
-                print_system("\n[Found flights. Summarizing...]\n")
+                print_system("\n[Found flights. Summarizing...]")
 
                 flights_summary = summarize_flights(get_routes(flights))
                 for json, flight in zip(flights, flights_summary):
