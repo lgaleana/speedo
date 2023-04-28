@@ -20,6 +20,6 @@ def summarize_flight(flight_json: Dict[str, Any]) -> str:
     return llm.next(messages)
 
 
-def summarize_flights(flights_json: List[Dict[str, Any]]) -> List[str]:
+def summarize(flights_json: List[Dict[str, Any]]) -> List[str]:
     with ThreadPoolExecutor() as executor:
         return list(executor.map(summarize_flight, flights_json))

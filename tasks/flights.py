@@ -11,7 +11,7 @@ from utils.io import print_system
 MAX_RETRY = 3
 
 
-def get_flights_request(conversation: List[Dict[str, str]]) -> Dict[str, Any]:
+def get_request(conversation: List[Dict[str, str]]) -> Dict[str, Any]:
     today = datetime.now().strftime("%A %B %d, %Y")
     messages = [{"role": "system", "content": f"Today is {today}."}]
     messages += conversation
