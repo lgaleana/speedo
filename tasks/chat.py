@@ -5,6 +5,9 @@ from ai import llm
 from tasks.prompts import chat_prompt
 
 
+STOP = "[SEARCH THE INTERNET]"
+
+
 def next_action(conversation: List[Dict[str, str]]) -> Dict[str, str]:
     today = datetime.now().strftime("%A %B %d, %Y")
     messages = [
@@ -16,12 +19,13 @@ def next_action(conversation: List[Dict[str, str]]) -> Dict[str, str]:
 
 
 def _parse_assistant_message(assistan_message: str) -> Dict[str, str]:
-    parsed_assistant_message = assistan_message.split("[SEARCH THE INTERNET]")
+    parsed_assistant_message = assistan_message.split(STOP)
 
     if len(parsed_assistant_message) > 1:
+        message = parsed_assistant_message[0].replace("`", "").strip()
         return {
             "action": "SEARCH_THE_INTERNET",
-            "message": parsed_assistant_message[0].replace("`", "").strip(),
+            "message": f"{message}\n\n{STOP}",
         }
     return {
         "action": "GET_USER_FEEDBACK",
