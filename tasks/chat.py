@@ -2,14 +2,12 @@ from datetime import datetime
 from typing import Dict, List
 
 from ai import llm
-from llm_watch.lib import watch
 from tasks.prompts import chat_prompt
 
 
 STOP = "[SEARCH THE INTERNET]"
 
 
-@watch
 def next_action(conversation: List[Dict[str, str]]) -> Dict[str, str]:
     today = datetime.now().strftime("%A %B %d, %Y")
     messages = [

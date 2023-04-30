@@ -1,9 +1,11 @@
 import agents as a
 import tasks as t
+from llm_watch.lib import llm_watch, validate_with_user_feedback
 from services.flights import get_routes
 from utils.io import user_input, print_assistant, print_system
 
 
+@llm_watch(validator=validate_with_user_feedback)
 def chat():
     conversation = []
 
