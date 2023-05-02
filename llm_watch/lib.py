@@ -32,11 +32,11 @@ def llm_watch(validator: Optional[Callable] = None):
                     status = validator(output)
                 else:
                     status = SUCCESS
-                log(log_file, status, output, args, kwargs)
+                log(log_file, args, kwargs, status, output)
 
                 return output
             except Exception as e:
-                log(log_file, ERROR, None, args, kwargs)
+                log(log_file, args, kwargs, status=ERROR, exception=e)
                 raise e
 
         return wrapper_watch
@@ -44,19 +44,29 @@ def llm_watch(validator: Optional[Callable] = None):
     return watch
 
 
-def validate_with_user_feedback(_) -> str:
-    feedback = input("\033[0;0mWas this interaction successful? (y/n)").strip().lower()
-    if feedback == "n":
-        return INVALID
-    return SUCCESS
-
-
-def log(session_file: TextIOWrapper, status: str, output, *args, **kwargs) -> None:
+def log(
+    session_file: TextIOWrapper,
+    args,
+    kwargs,
+    status: str,
+    output=None,
+    exception: Optional[Exception] = None,
+) -> None:
     args_repr = [repr(a) for a in args]
     kwargs_repr = [f"{k}={v!r}" for k, v in kwargs.items()]
     input_str = ",".join(args_repr + kwargs_repr)
 
-    session_file.write(f"{input_str}\t{output}\t{status}\n")
+    if not exception:
+        session_file.write(f"{input_str}\t{output}\t{status}\n")
+    else:
+        session_file.write(f"{input_str}\t{status}\t{exception}\n")
+
+
+def validate_with_user_feedback(_) -> str:
+    feedback = input("\033[0;0mWas this interaction successful? (y/n) ").strip().lower()
+    if feedback == "n":
+        return INVALID
+    return SUCCESS
 
 
 def setup_session_file(llm_call: Callable) -> TextIOWrapper:
