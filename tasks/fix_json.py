@@ -26,5 +26,4 @@ def fix_request(wrong_json_request: str, error: str) -> Dict[str, Any]:
     print_system(assistant_message)
 
     json_request = parse_assistant_response_for_json(assistant_message)
-    print_system(json_request)
     return json_request

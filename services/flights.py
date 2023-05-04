@@ -3,8 +3,6 @@ from typing import Any, Dict, List
 
 import requests
 
-from utils.io import print_system
-
 
 def search_kiwi(payload: Dict[str, Any]):
     BASE_URL = "https://api.tequila.kiwi.com/v2/search?"

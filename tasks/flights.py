@@ -24,7 +24,6 @@ def get_request(conversation: List[Dict[str, str]]) -> Dict[str, Any]:
     print_system(assistant_message)
 
     json_request = parse_assistant_response_for_json(assistant_message)
-    print_system(json_request)
     return json_request
 
 
@@ -33,11 +32,4 @@ def parse_assistant_response_for_json(message: str) -> Dict[str, Any]:
     message.replace("```json", "```")
     match = re.search("```(.*)```", message, re.DOTALL)
     json_request = match.group(0).replace("```", "")  # type: ignore
-    json_request = json.loads(json_request)
-
-    json_request["date_to"] = json_request["date_from"]
-    if "return_from" in json_request:
-        json_request["return_to"] = json_request["return_from"]
-    json_request["limit"] = 3
-
-    return json_request
+    return json.loads(json_request)
