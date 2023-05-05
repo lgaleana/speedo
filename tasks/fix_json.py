@@ -1,13 +1,11 @@
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from ai import llm
-from llm_watch.lib import llm_watch
 from tasks.prompts import flights_api_prompt
 from tasks.flights import parse_assistant_response_for_json
 from utils.io import print_system
 
 
-@llm_watch()
 def fix_request(wrong_json_request: str, error: str) -> Dict[str, Any]:
     wrong_json_request = wrong_json_request.replace("'", '"')
     messages = [

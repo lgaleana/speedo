@@ -1,5 +1,5 @@
 from typing import Any, Dict, List, Tuple
-from llm_watch.lib import WatchContext
+from llm_watch.lib import llm_watch, WatchContext
 
 import tasks as t
 from services.flights import search_kiwi
@@ -23,22 +23,26 @@ def search(
     return _fix_flights_request(original_request, str(flights_json), 2)
 
 
+@llm_watch()
 def _fix_flights_request(
     original_request: Dict[str, Any], error: str, retry: int
 ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
-    print_system(f"Exception: {error}")
-    print_system("0mRetrying...")
+    while True:
+        print_system(f"Exception: {error}")
+        print_system("0mRetrying...")
 
-    fixed_request = t.fix_json.fix_request(str(original_request), str(error))
-    flights_request = _process_flights_request(fixed_request)
-    flights_json = search_kiwi(flights_request)
+        fixed_request = t.fix_json.fix_request(str(original_request), str(error))
+        flights_request = _process_flights_request(fixed_request)
+        flights_json = search_kiwi(flights_request)
 
-    try:
-        return flights_request, flights_json["data"]
-    except KeyError as e:
-        if retry <= MAX_SEARCH_TRY:
-            return _fix_flights_request(fixed_request, str(flights_json), retry + 1)
-        raise e
+        try:
+            return flights_request, flights_json["data"]
+        except KeyError as e:
+            if retry <= MAX_SEARCH_TRY:
+                original_request = fixed_request
+                error = str(flights_json)
+                retry += 1
+            raise e
 
 
 def _process_flights_request(original_request: Dict[str, Any]) -> Dict[str, Any]:
