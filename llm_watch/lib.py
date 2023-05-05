@@ -61,7 +61,7 @@ def setup_session_file(path: str) -> TextIOWrapper:
         os.mkdir(llm_call_folder)
 
     now = datetime.datetime.now()
-    session_file_name = now.strftime("%Y_%m_%d__%H_%M_%S.txt")
+    session_file_name = now.strftime("%Y_%m_%d.txt")
     return open(f"{llm_call_folder}/{session_file_name}", "a+")
 
 
