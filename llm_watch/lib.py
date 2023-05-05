@@ -15,29 +15,33 @@ UNKNOWN = "UNKNOWN"
 
 """
 What to test?
-1. Whether the llm searches for flights at some point
-2. Whether the json request is built correctly for the flights api
+1. Whether the llm searches for flights at some point -> user validation
+2. Whether the json request is built correctly for the flights api -> manual validation
 3. Wehther the llm captures the requirements correctly
-4. Whether the json is fixed
+4. Whether the json is fixed -> no exceptions validation
 """
 
 
-def llm_watch(validator: Optional[Callable] = None):
+def chain_watch(validator: Optional[Callable] = None):
     def watch(llm_call: Callable):
         @functools.wraps(llm_call)
         def wrapper_watch(*args, **kwargs):
-            wl = WatchLog(llm_call)
+            log = _LogHandler(llm_call)
+            log.log_start()
+
             try:
                 output = llm_call(*args, **kwargs)
+
                 if validator:
-                    wl.set_status(validator(output))
+                    log.log_status(validator(output))
                 else:
-                    wl.accept()
-                wl.log(output=output, *args, **kwargs)
+                    log.log_accept()
+                log.log_end()
+
                 return output
             except Exception as e:
-                wl.invalidate()
-                wl.log(exception=e, *args, **kwargs)
+                log.log_exception(e)
+                log.log_end()
                 raise e
 
         return wrapper_watch
@@ -65,64 +69,61 @@ def setup_session_file(path: str) -> TextIOWrapper:
     return open(f"{llm_call_folder}/{session_file_name}", "a+")
 
 
-class WatchContext:
+class ChainContext:
     def __init__(
-        self, output: Optional[str] = None, validator: Optional[Callable] = None
+        self,
+        validator: Optional[Callable] = None,
+        default=UNKNOWN,
     ):
+        self.log = _LogHandler()
         self.validator = validator
-        self.wl = WatchLog()
+        self.status = default
 
     def __enter__(self):
-        previous_frame = inspect.stack()[1]
-        self.input = previous_frame.frame.f_locals
-        return self.wl
+        self.log.log_start()
+        return self
 
     def __exit__(self, exc_type, exc_value, exc_tb):
         if not exc_type:
-            self.wl.log(output=None, **self.input)
+            self.log.log_status(self.status)
         else:
-            self.wl.invalidate()
-            self.wl.log(output=None, exception=exc_type)
+            self.log.log_exception(exc_type(exc_value))
+        self.log.log_end()
+
+    def accept(self) -> None:
+        self.status = SUCCESS
 
 
-class WatchLog:
+class _LogHandler:
     def __init__(self, llm_call: Optional[Callable] = None):
         if llm_call:
-            self.path = f"{llm_call.__module__.replace('.', '_')}_{llm_call.__name__}"
+            path = f"{llm_call.__module__.replace('.', '_')}_{llm_call.__name__}"
         else:
             previous_frame = inspect.stack()[2]
             module_name = inspect.getmodule(previous_frame.frame).__name__.replace(".", "_")  # type: ignore
             function_name = previous_frame.function
             line_no = previous_frame.lineno
-            self.path = f"{module_name}_{function_name}_{line_no}"
+            path = f"{module_name}_{function_name}_{line_no}"
 
-        self.status = UNKNOWN
+        self.log_file = setup_session_file(path)
 
-    def set_status(self, status: str) -> None:
-        self.status = status
+    def log_start(self) -> None:
+        now = datetime.datetime.now().strftime("%Y_%m_%d %H:%M:%S")
+        self.log_file.write("---CHAIN START---\n")
+        self.log_file.write(f"START TIME: {now}\n")
 
-    def accept(self) -> None:
-        self.set_status(SUCCESS)
+    def log_status(self, status: Optional[str] = None) -> None:
+        if not status:
+            status = UNKNOWN
+        self.log_file.write(f"STATUS: {status}\n")
 
-    def fail(self) -> None:
-        self.set_status(FAIL)
+    def log_accept(self) -> None:
+        self.log_file.write(f"STATUS: {SUCCESS}\n")
 
-    def invalidate(self) -> None:
-        self.set_status(ERROR)
+    def log_exception(self, e: Exception) -> None:
+        self.log_file.write(f"EXCEPTION: {e}\n")
 
-    def log(
-        self,
-        *args,
-        output=None,
-        exception: Optional[Exception] = None,
-        **kwargs,
-    ) -> None:
-        args_repr = [repr(a) for a in args]
-        kwargs_repr = [f"{k}={v!r}" for k, v in kwargs.items()]
-        input_str = ",".join(args_repr + kwargs_repr)
-
-        with setup_session_file(self.path) as log_file:
-            if not exception:
-                log_file.write(f"{self.status}\t{input_str}\t{output}\n")
-            else:
-                log_file.write(f"{self.status}\t{input_str}\t{exception}\n")
+    def log_end(self) -> None:
+        now = datetime.datetime.now().strftime("%Y_%m_%d %H:%M:%S")
+        self.log_file.write(f"END TIME: {now}\n")
+        self.log_file.write("---CHAIN END---\n")

@@ -1,5 +1,5 @@
 from typing import Any, Dict, List, Tuple
-from llm_watch.lib import llm_watch, WatchContext
+from llm_watch.lib import FAIL, chain_watch, ChainContext
 
 import tasks as t
 from services.flights import search_kiwi
@@ -12,18 +12,18 @@ MAX_SEARCH_TRY = 3
 def search(
     conversation: List[Dict[str, str]]
 ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
-    with WatchContext() as w:
+    with ChainContext(default=FAIL) as c:
         original_request = t.flights.get_request(conversation)
         flights_request = _process_flights_request(original_request)
         flights_json = search_kiwi(flights_request)
         if "data" in flights_json:
-            w.accept()
+            c.accept()
             return flights_request, flights_json["data"]
 
     return _fix_flights_request(original_request, str(flights_json), 2)
 
 
-@llm_watch()
+@chain_watch()
 def _fix_flights_request(
     original_request: Dict[str, Any], error: str, retry: int
 ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
