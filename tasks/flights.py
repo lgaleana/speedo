@@ -4,23 +4,43 @@ from datetime import datetime
 from typing import Any, Dict, List
 
 from ai import llm
-from tasks.prompts import flights_api_prompt, flights_prompt
 from utils.io import print_system
 
 
 MAX_RETRY = 3
 
 
+PROMPT = """
+Today is {today}.
+
+API documentation:
+- fly_from (required): Airport code.
+- fly_to: Airport code.
+- date_from (required): Departure date (dd/mm/yyyy).
+- return_from: Return date (dd/mm/yyyy).
+- sort: Sorts the results by quality, price, date or duration. Price is the default value.
+- max_stopovers: Max number of stopovers per itinerary.  Use 'max_stopovers=0' for direct flights only.
+
+Based on the conversation above, build a JSON request for the API.
+
+Break this apart into steps:
+1. First, summarize the conversation.
+2. Then, make the math for the dates.
+3. Reflect if you need to include max_stopovers. Include it only if necessary.
+4. List only the necessary fields to include.
+5. Build the JSON request only with necessary fields.
+```
+JSON
+```
+"""
+
+
 def get_request(conversation: List[Dict[str, str]]) -> Dict[str, Any]:
     today = datetime.now().strftime("%A %B %d, %Y")
-    messages = [{"role": "system", "content": f"Today is {today}."}]
-    messages += conversation
-    messages += [
-        {"role": "system", "content": flights_api_prompt},
-        {"role": "system", "content": flights_prompt},
-    ]
+    flights_prompt = PROMPT.format(today=today)
+    messages = [{"role": "system", "content": flights_prompt}]
 
-    assistant_message = llm.next(messages)
+    assistant_message = llm.next(conversation + messages)
     print_system(assistant_message)
 
     json_request = parse_assistant_response_for_json(assistant_message)

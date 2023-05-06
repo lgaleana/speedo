@@ -91,7 +91,7 @@ class ChainContext:
         if not exc_type:
             self.log.log_status(self.status)
         else:
-            self.log.log_exception(exc_type(exc_value))
+            self.log.log_exception(exc_type)
         self.log.log_end()
 
     def accept(self) -> None:
@@ -131,4 +131,6 @@ class _LogHandler:
         self.log_file.write("---CHAIN END---\n")
 
     def log_prompt(self, prompt: str) -> None:
-        self.log_file.write(f"PROMPT: {prompt}")
+        self.log_file.write("START PROMPT\n")
+        self.log_file.write(f"{prompt}\n")
+        self.log_file.write("END PROMPT\n")

@@ -2,13 +2,12 @@ from datetime import datetime
 from typing import Dict, List
 
 from ai import llm
-from tasks.prompts import chat_prompt
 
 
-STOP = "[SEARCH THE INTERNET]"
+COMMAND = "[SEARCH THE INTERNET]"
 
 PROMPT = """
-You are a travel assistant. You have access to the internet. Today is {}.
+You are a travel assistant. You have access to the internet.
 Your goal is to help clients find the best flight tickets, catered to their needs.
 
 Break this apart into 3 TASKS.
@@ -25,22 +24,22 @@ TASK 2
 TASK 3
 - Make no assumptions. To search the internet, you must always use the following command:
 
-`{}`
+`{command}`
 
-Say hi.
+Today is {today}. Say hi.
 """
 
 
 def next_action(conversation: List[Dict[str, str]]) -> Dict[str, str]:
     today = datetime.now().strftime("%A %B %d, %Y")
-    chat_prompt = PROMPT.format(today, STOP)
+    chat_prompt = PROMPT.format(command=COMMAND, today=today)
     messages = [{"role": "system", "content": chat_prompt}]
 
     return _parse_assistant_message(llm.next(messages + conversation))
 
 
 def _parse_assistant_message(assistan_message: str) -> Dict[str, str]:
-    parsed_assistant_message = assistan_message.split(STOP)
+    parsed_assistant_message = assistan_message.split(COMMAND)
 
     if len(parsed_assistant_message) > 1:
         message = parsed_assistant_message[0].replace("`", "").strip()
