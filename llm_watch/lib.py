@@ -22,12 +22,13 @@ What to test?
 """
 
 
-def chain_watch(validator: Optional[Callable] = None):
+def chain_watch(prompt: str = UNKNOWN, validator: Optional[Callable] = None):
     def watch(llm_call: Callable):
         @functools.wraps(llm_call)
         def wrapper_watch(*args, **kwargs):
             log = _LogHandler(llm_call)
             log.log_start()
+            log.log_prompt(prompt)
 
             try:
                 output = llm_call(*args, **kwargs)
@@ -72,15 +73,18 @@ def setup_session_file(path: str) -> TextIOWrapper:
 class ChainContext:
     def __init__(
         self,
+        prompt: str = UNKNOWN,
         validator: Optional[Callable] = None,
         default=UNKNOWN,
     ):
         self.log = _LogHandler()
+        self.prompt = prompt
         self.validator = validator
         self.status = default
 
     def __enter__(self):
         self.log.log_start()
+        self.log.log_prompt(self.prompt)
         return self
 
     def __exit__(self, exc_type, exc_value, exc_tb):
@@ -112,9 +116,7 @@ class _LogHandler:
         self.log_file.write("---CHAIN START---\n")
         self.log_file.write(f"START TIME: {now}\n")
 
-    def log_status(self, status: Optional[str] = None) -> None:
-        if not status:
-            status = UNKNOWN
+    def log_status(self, status: str) -> None:
         self.log_file.write(f"STATUS: {status}\n")
 
     def log_accept(self) -> None:
@@ -127,3 +129,6 @@ class _LogHandler:
         now = datetime.datetime.now().strftime("%Y_%m_%d %H:%M:%S")
         self.log_file.write(f"END TIME: {now}\n")
         self.log_file.write("---CHAIN END---\n")
+
+    def log_prompt(self, prompt: str) -> None:
+        self.log_file.write(f"PROMPT: {prompt}")

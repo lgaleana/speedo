@@ -7,13 +7,34 @@ from tasks.prompts import chat_prompt
 
 STOP = "[SEARCH THE INTERNET]"
 
+PROMPT = """
+You are a travel assistant. You have access to the internet. Today is {}.
+Your goal is to help clients find the best flight tickets, catered to their needs.
+
+Break this apart into 3 TASKS.
+
+TASK 1
+- Understand the client preferences.
+- Ask one question at a time.
+- Be very efficient in communicating. We don't want to waste time.
+
+TASK 2
+- Reflect if you're ready to search the internet.
+- Make no assumptions. You must always search the internet to get any information about flights.
+
+TASK 3
+- Make no assumptions. To search the internet, you must always use the following command:
+
+`{}`
+
+Say hi.
+"""
+
 
 def next_action(conversation: List[Dict[str, str]]) -> Dict[str, str]:
     today = datetime.now().strftime("%A %B %d, %Y")
-    messages = [
-        {"role": "system", "content": chat_prompt},
-        {"role": "system", "content": f"Today is {today}\nSay hi."},
-    ]
+    chat_prompt = PROMPT.format(today, STOP)
+    messages = [{"role": "system", "content": chat_prompt}]
 
     return _parse_assistant_message(llm.next(messages + conversation))
 

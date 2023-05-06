@@ -5,7 +5,7 @@ from services.flights import get_routes
 from utils.io import user_input, print_assistant, print_system
 
 
-@chain_watch(validator=validate_with_user_feedback)
+@chain_watch(prompt=t.chat.PROMPT, validator=validate_with_user_feedback)
 def chat():
     conversation = []
 
