@@ -51,7 +51,7 @@ def chain_watch(prompt: str = UNKNOWN, validator: Optional[Callable] = None):
 
 
 def validate_with_user_feedback(_) -> str:
-    feedback = input("\033[0;0mWas this interaction successful? (y/n) ")
+    feedback = input("\033[0;0m\nWas this interaction successful? (y/n) ")
     if feedback.strip().lower() == "n":
         return FAIL
     return SUCCESS
