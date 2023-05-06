@@ -21,27 +21,28 @@ def chat():
             conversation.append({"role": "user", "content": user_message})
         else:
             print_system("\n[Searching...]\n")
-            request, flights = a.flights_searcher.search(conversation)
-            conversation.append(
-                {
-                    "role": "system",
-                    "content": f"SEARCH REQUEST: {request}",
-                }
-            )
+            _, flights = a.flights_searcher.search(conversation)
+            # conversation.append(
+            #     {
+            #         "role": "system",
+            #         "content": f"SEARCH REQUEST: {request}",
+            #     }
+            # )
 
-            print_system("\n[Found flights. Processing...]")
-            flights_summary = t.flights_summary.summarize(get_routes(flights))
+            if flights:
+                print_system("\n[Found flights. Processing...]")
+                flights_summary = t.flights_summary.summarize(get_routes(flights))
 
-            # for json, flight in zip(flights, flights_summary):
-            #     print_assistant(f"\n{flight}\nURL: {json['deep_link']}")
-            # else:
-            #     print_assistant("Sorry. I was unable to find any flights.")
-            conversation.append(
-                {
-                    "role": "system",
-                    "content": f"SEARCH RESULTS: {flights_summary}",
-                }
-            )
+                for json, flight in zip(flights, flights_summary):
+                    print_assistant(f"\n{flight}\nURL: {json['deep_link']}")
+                else:
+                    print_assistant("Sorry. I was unable to find any flights.")
+            # conversation.append(
+            #     {
+            #         "role": "system",
+            #         "content": f"SEARCH RESULTS: {flights_summary}",
+            #     }
+            # )
+            # print_assistant(t.chat.next_action(conversation)["message"])
 
-            print_assistant(t.chat.next_action(conversation)["message"])
             break
