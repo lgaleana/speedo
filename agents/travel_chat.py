@@ -13,7 +13,7 @@ def chat():
 
     while True:
         with ThreadPoolExecutor() as executor:
-            # In parallel, continue the and check if the conversation is diverging.
+            # In parallel, continue the chat and check if the conversation is diverging.
             f_assistant_action = executor.submit(t.chat.next_action, conversation)
             f_conversation_diverged = executor.submit(
                 t.keep_context.conversation_diverges, conversation

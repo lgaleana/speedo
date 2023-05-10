@@ -41,5 +41,4 @@ def fix_request(wrong_json_request: str, error: str) -> Dict[str, Any]:
     assistant_message = llm.next(messages)
     print_system(assistant_message)
 
-    json_request = parse_assistant_response_for_json(assistant_message)
-    return json_request
+    return parse_assistant_response_for_json(assistant_message)

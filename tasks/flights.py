@@ -43,8 +43,7 @@ def get_request(conversation: List[Dict[str, str]]) -> Dict[str, Any]:
     assistant_message = llm.next(conversation + messages)
     print_system(assistant_message)
 
-    json_request = parse_assistant_response_for_json(assistant_message)
-    return json_request
+    return parse_assistant_response_for_json(assistant_message)
 
 
 def parse_assistant_response_for_json(message: str) -> Dict[str, Any]:

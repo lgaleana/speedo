@@ -16,6 +16,7 @@ def search(
         original_request = t.flights.get_request(conversation)
         flights_request = _process_flights_request(original_request)
         flights_json = search_kiwi(flights_request)
+        
         if "data" in flights_json:
             c.accept()
             return flights_request, flights_json["data"]
