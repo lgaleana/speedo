@@ -18,18 +18,17 @@ def chat():
             f_conversation_diverged = executor.submit(
                 t.keep_context.conversation_diverges, conversation
             )
+            assistant_action = f_assistant_action.result()
+            conversation_diverged = f_conversation_diverged.result()
 
-        conversation_diverged = f_conversation_diverged.result()
         if conversation_diverged:
             # Finish the loop
             print_system(
                 "\nI'm sorry. This conversation is going off topic. Please try again. Thanks!"
             )
-            f_assistant_action.cancel()
             break
 
         # Display chat response
-        assistant_action = f_assistant_action.result()
         assistant_message = assistant_action["message"]
         conversation.append({"role": "assistant", "content": assistant_message})
         print_assistant(assistant_message)
