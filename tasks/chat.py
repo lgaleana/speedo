@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Dict, List
 
 from ai import llm
+from utils.io import print_system
 
 
 COMMAND = "[SEARCH THE INTERNET]"

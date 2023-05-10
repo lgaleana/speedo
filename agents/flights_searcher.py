@@ -51,5 +51,4 @@ def _process_flights_request(original_request: Dict[str, Any]) -> Dict[str, Any]
     if "return_from" in original_request:
         flights_request["return_to"] = original_request["return_from"]
     flights_request["limit"] = 3
-    print_system(flights_request)
     return flights_request
