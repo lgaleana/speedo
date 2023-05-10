@@ -8,7 +8,12 @@ from ai import llm
 PROMPT = """
 You are a travel assistant.
 
-The following JSON contains a flight route. Summarize it.
+The following JSON contains data about a flight. Summarize it.
+
+Constraints:
+1. Mention the most helpful information.
+2. Turn seconds into hours.
+3. Don't mention the word JSON.
 
 {flight_json}
 """
@@ -16,7 +21,7 @@ The following JSON contains a flight route. Summarize it.
 
 def summarize_flight(flight_json: Dict[str, Any]) -> str:
     messages = [{"role": "user", "content": PROMPT.format(flight_json=flight_json)}]
-    return llm.next(messages)
+    return llm.next(messages, temperature=0.4)
 
 
 def summarize(flights_json: List[Dict[str, Any]]) -> List[str]:

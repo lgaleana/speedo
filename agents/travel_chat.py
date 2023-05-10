@@ -44,10 +44,10 @@ def chat():
 
             if flights:
                 print_system("\n[Found flights. Processing...]")
-                flights_summary = t.flights_summary.summarize(get_routes(flights))
+                flights_summary = t.flights_summary.summarize(flights)
 
                 for json, flight in zip(flights, flights_summary):
-                    print_assistant(f"\n{flight}\nURL: {json['deep_link']}")
+                    print_assistant(f"\n{flight}\nBooking: {json['deep_link']}")
             else:
                 print_assistant("Sorry. I was unable to find any flights.")
 

@@ -28,9 +28,10 @@ Break this apart into steps:
 2. Then, make the math for the dates.
 3. Reflect if you need to include max_stopovers. Include it only if necessary.
 4. List only the necessary fields to include.
-5. Build the JSON request only with necessary fields.
+5. Build the `JSON` request only with necessary fields.
+
 ```
-JSON
+JSON request
 ```
 """
 

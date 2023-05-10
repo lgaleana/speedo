@@ -16,10 +16,10 @@ def search(
         original_request = t.flights.get_request(conversation)
         flights_request = _process_flights_request(original_request)
         flights_json = search_kiwi(flights_request)
-        
+
         if "data" in flights_json:
             c.accept()
-            return flights_request, flights_json["data"]
+            return flights_request, _process_flights_data(flights_json["data"])
 
     return _fix_flights_request(original_request, str(flights_json), 2)
 
@@ -37,7 +37,7 @@ def _fix_flights_request(
         flights_json = search_kiwi(flights_request)
 
         try:
-            return flights_request, flights_json["data"]
+            return flights_request, _process_flights_data(flights_json["data"])
         except KeyError as e:
             if retry <= MAX_SEARCH_TRY:
                 original_request = fixed_request
@@ -52,4 +52,11 @@ def _process_flights_request(original_request: Dict[str, Any]) -> Dict[str, Any]
     if "return_from" in original_request:
         flights_request["return_to"] = original_request["return_from"]
     flights_request["limit"] = 3
+    flights_request["curr"] = "USD"
     return flights_request
+
+
+def _process_flights_data(flights_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    for f in flights_data:
+        del f["booking_token"]
+    return flights_data
