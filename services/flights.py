@@ -1,5 +1,5 @@
 import os
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 import requests
 
@@ -15,8 +15,3 @@ def search_kiwi(payload: Dict[str, Any]):
         },
     )
     return response.json()
-
-
-def get_routes(json_response: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    processed_response = [{"route": flight["route"]} for flight in json_response]
-    return processed_response

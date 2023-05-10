@@ -3,7 +3,6 @@ from concurrent.futures import ThreadPoolExecutor
 import agents as a
 import tasks as t
 from llm_watch.lib import chain_watch, validate_with_user_feedback
-from services.flights import get_routes
 from utils.io import user_input, print_assistant, print_system
 
 
