@@ -1,3 +1,4 @@
+import json
 from typing import Any, Dict
 
 from ai import llm
@@ -14,7 +15,7 @@ API documentation:
 - sort: Sorts the results by quality, price, date or duration. Price is the default value.
 - max_stopovers: Max number of stopovers per itinerary.  Use 'max_stopovers=0' for direct flights only.
 
-"The following JSON request produced the following error: {error}.
+The following JSON request produced the following error: {error}.
 ```
 {wrong_json_request}
 ```
@@ -41,4 +42,11 @@ def fix_request(wrong_json_request: str, error: str) -> Dict[str, Any]:
     assistant_message = llm.next(messages)
     print_system(assistant_message)
 
-    return parse_assistant_response_for_json(assistant_message)
+    return _parse_assistant_response_for_json(assistant_message)
+
+
+def _parse_assistant_response_for_json(assistant_message: str) -> Dict[str, Any]:
+    try:
+        return parse_assistant_response_for_json(assistant_message)
+    except:
+        return json.loads(assistant_message)

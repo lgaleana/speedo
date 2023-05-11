@@ -6,14 +6,12 @@ from services.flights import search_kiwi
 from utils.io import print_system
 
 
-MAX_SEARCH_TRY = 3
+MAX_SEARCH_TRY = 2
 
 
-def search(
-    conversation: List[Dict[str, str]]
-) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
+def search(itinerary: str) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
     with ChainContext(prompt=t.flights.PROMPT, default=FAIL) as c:
-        original_request = t.flights.get_request(conversation)
+        original_request = t.flights.get_request(itinerary)
         flights_request = _process_flights_request(original_request)
         flights_json = search_kiwi(flights_request)
 
@@ -21,13 +19,14 @@ def search(
             c.accept()
             return flights_request, _process_flights_data(flights_json["data"])
 
-    return _fix_flights_request(original_request, str(flights_json), 2)
+    return _fix_flights_request(original_request, str(flights_json))
 
 
 @chain_watch(prompt=t.fix_json.PROMPT)
 def _fix_flights_request(
-    original_request: Dict[str, Any], error: str, retry: int
+    original_request: Dict[str, Any], error: str
 ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
+    retry = 1
     while True:
         print_system(f"Exception: {error}")
         print_system("0mRetrying...")

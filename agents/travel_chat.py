@@ -27,19 +27,23 @@ def chat():
             )
             break
 
-        # Display chat response
-        assistant_message = assistant_action["message"]
-        conversation.append({"role": "assistant", "content": assistant_message})
-        print_assistant(assistant_message)
+        conversation.append(
+            {
+                "role": "assistant",
+                "action": assistant_action["action"],
+                "message": assistant_action["message"],
+            }
+        )
+        print_assistant(assistant_action["message"])
 
-        if assistant_action["action"] != "SEARCH_THE_INTERNET":
+        if assistant_action["action"] != "SEARCH":
             # Continue chatting with the user
             user_message = user_input()
-            conversation.append({"role": "user", "content": user_message})
+            conversation.append({"role": "client", "message": user_message})
         else:
             # Search for flights
             print_system("\n[Searching...]\n")
-            _, flights = a.flights_searcher.search(conversation)
+            _, flights = a.flights_searcher.search(assistant_action["message"])
 
             if flights:
                 print_system("\n[Found flights. Processing...]")

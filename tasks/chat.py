@@ -1,54 +1,60 @@
+import re
 from datetime import datetime
 from typing import Dict, List
 
 from ai import llm
-from utils.io import print_system
 
-
-COMMAND = "[SEARCH THE INTERNET]"
 
 PROMPT = """
-You are a travel assistant. You have access to the internet.
+You are a travel AI assistant.
 Your goal is to help clients find the best flight tickets, catered to their needs.
+Go out of your way to really understand and satisfy what the client wants.
 
-Break this apart into 3 TASKS.
+To achieve your goal, you can perform the following actions:
+1. CHAT[message]: To collect information about the client preferences. Try to collect as much information at once.
+2. SEARCH[itinerary]: To search for flight tickets. Use this action once you have collected enough information.
 
-TASK 1
-- Understand the client preferences.
-- Ask one question at a time.
-- Be very efficient in communicating. We don't want to waste time.
+Use the following format:
+CLIENT INPUT: Message from the client.
+ASSISTANT ACTION: An action to perform. Use the correct syntax from above.
 
-TASK 2
-- Reflect if you're ready to search the internet.
-- Make no assumptions. You must always search the internet to get any information about flights.
-
-TASK 3
-- Make no assumptions. To search the internet, you must always use the following command:
-
-`{command}`
-
-Today is {today}. Say hi.
+CLIENT INPUT: Hi!
+{conversation}
 """
 
 
 def next_action(conversation: List[Dict[str, str]]) -> Dict[str, str]:
     today = datetime.now().strftime("%A %B %d, %Y")
-    chat_prompt = PROMPT.format(command=COMMAND, today=today)
-    messages = [{"role": "system", "content": chat_prompt}]
+    chat_prompt = PROMPT.format(today=today, conversation=_parse_input(conversation))
+    messages = [{"role": "user", "content": chat_prompt}]
 
-    return _parse_assistant_message(llm.next(messages + conversation))
+    return _parse_assistant_message(llm.next(messages))
+
+
+def _parse_input(conversation: List[Dict[str, str]]) -> str:
+    conversation_str = ""
+    for message in conversation:
+        if message["role"] == "client":
+            conversation_str += f"\nCLIENT INPUT: {message['message']}\n"
+        else:
+            conversation_str += (
+                f"ASSISTANT ACTION: {message['action']}[{message['message']}]\n"
+            )
+    return conversation_str
 
 
 def _parse_assistant_message(assistan_message: str) -> Dict[str, str]:
-    parsed_assistant_message = assistan_message.split(COMMAND)
+    # Might throw
+    match = re.search(r"ASSISTANT ACTION: (CHAT|SEARCH)\[(.*)\]", assistan_message)
+    action = match.group(1)  # type: ignore
+    message = match.group(2)  # type: ignore
 
-    if len(parsed_assistant_message) > 1:
-        message = parsed_assistant_message[0].replace("`", "").strip()
+    if action.startswith("SEARCH"):
         return {
-            "action": "SEARCH_THE_INTERNET",
+            "action": "SEARCH",
             "message": message,
         }
     return {
-        "action": "GET_USER_FEEDBACK",
-        "message": assistan_message,
+        "action": "CHAT",
+        "message": message,
     }

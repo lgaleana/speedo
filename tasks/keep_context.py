@@ -20,7 +20,7 @@ def conversation_diverges(conversation: List[Dict[str, str]]) -> bool:
     conversation_str = ""
     for c in conversation:
         conversation_str += "assistant: " if c["role"] == "assistant" else "client: "
-        conversation_str += f"{c['content']}\n"
+        conversation_str += f"{c['message']}\n"
 
     messages = [
         {"role": "user", "content": conversation_str},
