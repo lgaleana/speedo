@@ -40,7 +40,7 @@ def get_request(itinerary: str) -> Dict[str, Any]:
     flights_prompt = PROMPT.format(itinerary=itinerary, today=today)
     messages = [{"role": "user", "content": flights_prompt}]
 
-    assistant_message = llm.next(messages)
+    assistant_message = llm.next(messages, temperature=0)
     print_system(assistant_message)
 
     return parse_assistant_response_for_json(assistant_message)
@@ -48,7 +48,6 @@ def get_request(itinerary: str) -> Dict[str, Any]:
 
 def parse_assistant_response_for_json(message: str) -> Dict[str, Any]:
     # Might throw
-    message.replace("```json", "```")
-    match = re.search("```(.*)```", message, re.DOTALL)
-    json_request = match.group(0).replace("```", "")  # type: ignore
+    match = re.search("({.*})", message, re.DOTALL)
+    json_request = match.group(0)  # type: ignore
     return json.loads(json_request)
