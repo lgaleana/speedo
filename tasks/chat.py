@@ -15,10 +15,10 @@ To achieve your goal, you can perform the following actions:
 2. SEARCH[itinerary]: To search for flight tickets. Use this action once you have collected enough information.
 
 Use the following format:
-CLIENT INPUT: Message from the client.
+OBSERVATION: What you see.
 ASSISTANT ACTION: An action to perform. Use the correct syntax from above.
 
-CLIENT INPUT: Hi!
+OBSERVATION: This is the beginning of the conversation.
 {conversation}
 """
 
@@ -35,7 +35,7 @@ def _parse_input(conversation: List[Dict[str, str]]) -> str:
     conversation_str = ""
     for message in conversation:
         if message["role"] == "client":
-            conversation_str += f"\nCLIENT INPUT: {message['message']}\n"
+            conversation_str += f"\nOBSERVATION: CLIENT SAYS: {message['message']}\n"
         else:
             conversation_str += (
                 f"ASSISTANT ACTION: {message['action']}[{message['message']}]\n"
