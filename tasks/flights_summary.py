@@ -6,14 +6,15 @@ from ai import llm
 
 
 PROMPT = """
-You are a travel assistant.
+You are a travel AI assistant.
 
-The following JSON contains data about a flight. Summarize it.
+The following JSON contains data about a flight. Summarize it as much as possible.
 
 Constraints:
-1. Mention the most helpful information.
-2. Turn seconds into hours.
-3. Don't mention the word JSON.
+1. Mention the most helpful information only.
+2. Turn all time into hours.
+3. Include the flight id.
+4. Don't mention the word JSON.
 
 {flight_json}
 """

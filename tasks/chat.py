@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Dict, List
 
 from ai import llm
+from utils.io import print_system
 
 
 PROMPT = """
@@ -13,6 +14,7 @@ Go out of your way to really understand and satisfy what the client wants.
 To achieve your goal, you can perform the following actions:
 1. CHAT[message]: To collect information about the client preferences. Try to collect as much information at once.
 2. SEARCH[itinerary]: To search for flight tickets. Use this action once you have collected enough information.
+3. BOOK[flight id]: To book a flight.
 
 Use the following format:
 OBSERVATION: What you see.
@@ -36,25 +38,19 @@ def _parse_input(conversation: List[Dict[str, str]]) -> str:
     for message in conversation:
         if message["role"] == "client":
             conversation_str += f"\nOBSERVATION: CLIENT SAYS: {message['message']}\n"
-        else:
+        elif message["role"] == "assistant":
             conversation_str += (
                 f"ASSISTANT ACTION: {message['action']}[{message['message']}]\n"
             )
+        else:
+            conversation_str += f"\nOBSERVATION: {message['message']}\n"
     return conversation_str
 
 
 def _parse_assistant_message(assistan_message: str) -> Dict[str, str]:
     # Might throw
-    match = re.search(r"ASSISTANT ACTION: (CHAT|SEARCH)\[(.*)\]", assistan_message)
-    action = match.group(1)  # type: ignore
-    message = match.group(2)  # type: ignore
-
-    if action.startswith("SEARCH"):
-        return {
-            "action": "SEARCH",
-            "message": message,
-        }
+    match = re.search(r"ASSISTANT ACTION: (CHAT|SEARCH|BOOK)\[(.*)\]", assistan_message)
     return {
-        "action": "CHAT",
-        "message": message,
+        "action": match.group(1),  # type: ignore
+        "message": match.group(2),  # type: ignore
     }

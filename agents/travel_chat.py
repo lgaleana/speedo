@@ -34,24 +34,32 @@ def chat():
                 "message": assistant_action["message"],
             }
         )
-        print_assistant(assistant_action["message"])
 
-        if assistant_action["action"] != "SEARCH":
+        if assistant_action["action"] == "CHAT":
             # Continue chatting with the user
+            print_assistant(assistant_action["message"])
+
             user_message = user_input()
             conversation.append({"role": "client", "message": user_message})
-        else:
+        elif assistant_action["action"] == "SEARCH":
             # Search for flights
-            print_system("\n[Searching...]\n")
-            _, flights = a.flights_searcher.search(assistant_action["message"])
+            itinerary = assistant_action["message"]
+            print_system(f"Searching for: {itinerary}...\n")
+
+            flights_request, flights = a.flights_searcher.search(itinerary)
 
             if flights:
-                print_system("\n[Found flights. Processing...]")
+                print_system("Found flights. Processing...")
                 flights_summary = t.flights_summary.summarize(flights)
-
-                for json, flight in zip(flights, flights_summary):
-                    print_assistant(f"\n{flight}\nBooking: {json['deep_link']}")
             else:
-                print_assistant("Sorry. I was unable to find any flights.")
+                flights_summary = []
 
+            conversation.append(
+                {
+                    "role": "system",
+                    "message": f"You used this request: {flights_request} and you found these flights: {flights_summary}",
+                }
+            )
+        else:
+            print_system(assistant_action["message"])
             break

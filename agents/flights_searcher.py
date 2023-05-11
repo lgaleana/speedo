@@ -28,8 +28,8 @@ def _fix_flights_request(
 ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
     retry = 1
     while True:
-        print_system(f"Exception: {error}")
-        print_system("0mRetrying...")
+        print_system(f"(Exception: {error})")
+        print_system("(Retrying...)")
 
         fixed_request = t.fix_json.fix_request(str(original_request), str(error))
         flights_request = _process_flights_request(fixed_request)
@@ -42,7 +42,8 @@ def _fix_flights_request(
                 original_request = fixed_request
                 error = str(flights_json)
                 retry += 1
-            raise e
+            else:
+                raise e
 
 
 def _process_flights_request(original_request: Dict[str, Any]) -> Dict[str, Any]:

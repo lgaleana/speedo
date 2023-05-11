@@ -4,7 +4,6 @@ from datetime import datetime
 from typing import Any, Dict
 
 from ai import llm
-from utils.io import print_system
 
 
 MAX_RETRY = 3
@@ -41,8 +40,6 @@ def get_request(itinerary: str) -> Dict[str, Any]:
     messages = [{"role": "user", "content": flights_prompt}]
 
     assistant_message = llm.next(messages, temperature=0)
-    print_system(assistant_message)
-
     return parse_assistant_response_for_json(assistant_message)
 
 
