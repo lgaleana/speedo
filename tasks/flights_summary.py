@@ -13,7 +13,7 @@ The following JSON contains data about a flight. Summarize it as much as possibl
 Constraints:
 1. Mention the most helpful information only.
 2. Turn all time into hours.
-3. Include the flight id.
+3. Include the deep link.
 4. Don't mention the word JSON.
 
 {flight_json}
