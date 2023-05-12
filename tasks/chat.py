@@ -20,6 +20,8 @@ Use the following format:
 OBSERVATION: What you see.
 ASSISTANT ACTION: An action to perform. Use the correct syntax from above.
 
+Begin. Use one action at a time.
+
 OBSERVATION: This is the beginning of the conversation.
 {conversation}
 """
