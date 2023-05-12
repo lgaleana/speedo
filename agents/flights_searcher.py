@@ -53,6 +53,7 @@ def _process_flights_request(original_request: Dict[str, Any]) -> Dict[str, Any]
         flights_request["return_to"] = original_request["return_from"]
     flights_request["limit"] = 3
     flights_request["curr"] = "USD"
+    print_system(flights_request)
     return flights_request
 
 

@@ -3,6 +3,7 @@ from typing import Any, Dict
 
 from ai import llm
 from tasks.flights import parse_assistant_response_for_json
+from utils.io import print_system
 
 
 PROMPT = """
@@ -39,4 +40,5 @@ def fix_request(wrong_json_request: str, error: str) -> Dict[str, Any]:
     ]
 
     assistant_message = llm.next(messages, temperature=0)
+
     return parse_assistant_response_for_json(assistant_message)

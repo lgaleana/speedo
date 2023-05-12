@@ -44,7 +44,7 @@ def chat():
         elif assistant_action["action"] == "SEARCH":
             # Search for flights
             itinerary = assistant_action["message"]
-            print_system(f"Searching for: {itinerary}...\n")
+            print_system(f"Searching for: {itinerary}...")
 
             flights_request, flights = a.flights_searcher.search(itinerary)
 
