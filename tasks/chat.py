@@ -51,7 +51,9 @@ def _parse_input(conversation: List[Dict[str, str]]) -> str:
 
 def _parse_assistant_message(assistan_message: str) -> Dict[str, str]:
     # Might throw
-    match = re.search(r"ASSISTANT ACTION: (CHAT|SEARCH|BOOK)\[(.*)\]", assistan_message)
+    match = re.search(
+        r"ASSISTANT ACTION: (CHAT|SEARCH|BOOK)\[([^\n]*)\]", assistan_message, re.DOTALL
+    )
     return {
         "action": match.group(1),  # type: ignore
         "message": match.group(2),  # type: ignore
